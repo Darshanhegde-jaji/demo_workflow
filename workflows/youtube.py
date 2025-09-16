@@ -23,8 +23,8 @@ from pymongo import MongoClient
 
 load_dotenv()
 
-os.environ["GROQ_API_KEY"] = os.getenv("GROQ_API_KEY")
-os.environ["TAVILY_API_KEY"] = os.getenv("TAVILY_API_KEY")  
+# os.environ["GROQ_API_KEY"] = os.getenv("GROQ_API_KEY")
+# os.environ["TAVILY_API_KEY"] = os.getenv("TAVILY_API_KEY")  
 
 client = MongoClient("mongodb://localhost:27017/")
 db = client["resume_db"]
@@ -42,12 +42,12 @@ class AppState(TypedDict):
     confidence: float
     messages:Annotated[List[dict], add_messages]
 
-@tool(description="Searches the web using Tavily API. Input should be a search query.")
-def travily_search(query: str) -> str:
-    search = TavilySearch(max_results=5)
-    return search.invoke(
-        {query: query}
-    )
+# @tool(description="Searches the web using Tavily API. Input should be a search query.")
+# def travily_search(query: str) -> str:
+#     search = TavilySearch(max_results=5)
+#     return search.invoke(
+#         {query: query}
+#     )
 
 
 
@@ -56,7 +56,7 @@ llm = ChatOllama(model="llama3.1:8b", base_url="http://localhost:11434")
 #     model="meta-llama/llama-4-scout-17b-16e-instruct"
 # )
 
-agent = create_react_agent(llm, tools=[travily_search])
+# agent = create_react_agent(llm, tools=[travily_search])
 
 def input_youtube_url(state: AppState) -> AppState:
     """Prompts the user to input a YouTube video URL."""
@@ -129,13 +129,13 @@ def ask_chatbot(state: AppState) -> AppState:
     else:
         return state
 
-def create_agent(state: AppState) -> AppState:
-    """Creates a React agent for the chatbot."""
-    # search_result = agent.invoke(state["question"])
-    messages = [{"role": "user", "content": state["question"]}]
-    search_result = agent.invoke({"messages": messages})
-    state["search_results"] = search_result
-    return state
+# def create_agent(state: AppState) -> AppState:
+#     """Creates a React agent for the chatbot."""
+#     # search_result = agent.invoke(state["question"])
+#     messages = [{"role": "user", "content": state["question"]}]
+#     search_result = agent.invoke({"messages": messages})
+#     state["search_results"] = search_result
+#     return state
 
 def get_confidence(state: AppState) -> float:
     """Returns the confidence score of the chatbot's answer."""
@@ -165,7 +165,7 @@ builder.add_node("extract_youtube_transcript", extract_youtube_transcript)
 builder.add_node("store_transcript_in_vector_db", store_transcript_in_vector_db)
 builder.add_node("chatbot", chatbot)
 builder.add_node("ask_chatbot", ask_chatbot)
-builder.add_node("agent", create_agent)
+# builder.add_node("agent", create_agent)
 
 builder.set_entry_point("input_youtube_url")
 builder.add_edge("input_youtube_url", "extract_youtube_transcript")
